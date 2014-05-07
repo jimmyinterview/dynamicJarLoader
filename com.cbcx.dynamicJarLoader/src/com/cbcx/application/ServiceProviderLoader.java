@@ -9,7 +9,7 @@ import java.nio.file.Path;
 import java.util.ServiceLoader;
 
 import com.cbcx.service.IService;
-import com.cbcx.serviceImpl.ServiceProvider;
+import com.cbcx.service.ServiceProvider;
 import com.novak.watchservice.IWatchService;
 
 public class ServiceProviderLoader extends IWatchService {

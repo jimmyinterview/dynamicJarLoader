@@ -10,10 +10,12 @@ import java.nio.file.WatchEvent;
 import java.nio.file.WatchEvent.Kind;
 import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
+import java.sql.Timestamp;
 
 public abstract class IWatchService {
 	
 	public void run(Path path) throws IOException{
+		java.util.Date date= new java.util.Date();
 		
 		// Sanity check - Check if path is a folder
 		try {
@@ -54,11 +56,11 @@ public abstract class IWatchService {
 						continue; //loop
 					} else if (StandardWatchEventKinds.ENTRY_CREATE == kind) {
 						Path newPath = ((WatchEvent<Path>) watchEvent).context();
-						System.out.println("New path created: " + newPath);
+						System.out.println(new Timestamp(date.getTime()) + ": New path created: " + newPath);
 						action(newPath);
 					} else if (StandardWatchEventKinds.ENTRY_MODIFY == kind) {
 						Path modPath = ((WatchEvent<Path>) watchEvent).context();
-						System.out.println("Modified path: " + modPath);
+						System.out.println(new Timestamp(date.getTime()) + ": Modified path: " + modPath);
 						action(modPath);
 					} else if (StandardWatchEventKinds.ENTRY_CREATE == kind) {
 						Path newPath = ((WatchEvent<Path>) watchEvent).context();

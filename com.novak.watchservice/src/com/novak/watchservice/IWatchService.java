@@ -7,14 +7,22 @@ import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.nio.file.StandardWatchEventKinds;
 import java.nio.file.WatchEvent;
-import java.nio.file.WatchEvent.Kind;
 import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
+import java.nio.file.WatchEvent.Kind;
 import java.sql.Timestamp;
 
-public abstract class IWatchService {
+public abstract class IWatchService implements Runnable {
 	
-	public void run(Path path) throws IOException{
+	private final Path path;
+	
+	public IWatchService(Path path){
+		this.path = path;
+	}
+	
+	abstract protected void action(Path path); 
+	
+	public void run(){
 		java.util.Date date= new java.util.Date();
 		
 		// Sanity check - Check if path is a folder
@@ -39,8 +47,7 @@ public abstract class IWatchService {
 			// register the path to the service and add events to watch
 			path.register(service, 
 					StandardWatchEventKinds.ENTRY_CREATE,
-					StandardWatchEventKinds.ENTRY_MODIFY,
-					StandardWatchEventKinds.ENTRY_DELETE);
+					StandardWatchEventKinds.ENTRY_MODIFY);
 			
 			// Start the infinite polling loop
 			WatchKey key = null;
@@ -62,14 +69,6 @@ public abstract class IWatchService {
 						Path modPath = ((WatchEvent<Path>) watchEvent).context();
 						System.out.println(new Timestamp(date.getTime()) + ": Modified path: " + modPath);
 						action(modPath);
-					} else if (StandardWatchEventKinds.ENTRY_CREATE == kind) {
-						Path newPath = ((WatchEvent<Path>) watchEvent).context();
-						System.out.println("New path created: " + newPath);
-						action(newPath);
-					} else if (StandardWatchEventKinds.ENTRY_MODIFY == kind) {
-						Path modPath = ((WatchEvent<Path>) watchEvent).context();
-						System.out.println("Modified path: " + modPath);
-						action(modPath);
 					}
 				}
 				
@@ -84,7 +83,4 @@ public abstract class IWatchService {
 			ie.printStackTrace();
 		}
 	}
-	
-	protected abstract void action(Path path);
-		
 }
